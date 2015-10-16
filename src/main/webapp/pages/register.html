@@ -1,0 +1,154 @@
+<html>
+<head>
+<!--Import materialize.css-->
+<link type="text/css" rel="stylesheet" href="../css/font-awesome.css"
+	media="screen,projection" />
+<link type="text/css" rel="stylesheet" href="../css/materialize.css"
+	media="screen,projection" />
+<link type="text/css" rel="stylesheet" href="../css/style.css"
+	media="screen,projection" />
+<!-- Icon font -->
+<link href="../css/MaterialIcons.css" rel="stylesheet">
+
+
+<!--Let browser know website is optimized for mobile-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Blood Donation Search</title>
+</head>
+<body ng-app="myApp" ng-controller="DonorCtrlr" id="body">
+
+	<nav>
+		<div class="nav-wrapper" style="font-size: 2.1rem">
+			<a href="../" style=" color:white; float: left;padding-left:0.5em">Register</a> 
+		</div> 	
+	</nav>
+	
+	
+  <div class="row">
+    <form class="col s12" ng-submit="submit()">
+			<div class="row">
+				<div class="input-field col s6">
+					<input placeholder="First Last name	" id="first_name" type="text" required=""
+						ng-model="formValue.name" class="validate"> <label for="first_name">Name</label>
+				</div>
+				<div class="input-field col s4">
+					<select class="location">
+						<option value="" disabled selected></option>
+						<option value="080">Bangalore</option>
+						<option value="044">Chennai</option>
+						<option value="022">Mumbai</option>
+					</select>
+					<label for="first_name">Location</label>
+				</div>
+				<div class="input-field col s2">
+					<select class="group">
+						<option value="" disabled selected></option>
+						<option value="A+">A+</option>
+						<option value="B+">B+</option>
+						<option value="AB+">AB+</option>
+						<option value="O+">O+</option>
+						<option value="A-">A-</option>
+						<option value="B-">B-</option>
+						<option value="AB-">AB-</option>
+						<option value="O-">O-</option>
+					</select>
+					<label for="first_name">Blood group</label>
+				</div>
+				
+			</div>
+			<div class="row">
+				<div class="input-field col s6">
+					<input placeholder="Mobile Number" id="address" type="number" required=""
+						ng-model="formValue.phone" class="validate"> <label for="first_name">Phone</label>
+				</div>
+				<div class="input-field col s6">
+					<input id="email" type="email" class="validate"  required="" ng-model="formValue.email"> <label
+						for="email">Email</label>
+				</div>
+			</div>
+				
+			<div class="row">
+				<div class="input-field col s12">
+					<input placeholder="Address" id="address" type="text"  required="" ng-model="formValue.address"
+						class="validate"> <label for="first_name">Address</label>
+				</div>
+			</div>
+
+			<div class="row">
+				<!-- <button class="btn waves-effect waves-light" type="submit" name="action" ng-hide="{{disablebutton}}" disabled="disabled" >Submit</button> -->
+				<button class="btn waves-effect waves-light" type="submit" name="action" ng-show="{{disablebutton}}"  >Submit</button>
+			</div>
+		</form>
+  </div>
+        
+
+	<!--Import jQuery before materialize.js-->
+	<script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+	<script type="text/javascript" src="../js/materialize.js"></script>
+	<script type="text/javascript" src="../js/angular.js"></script>
+
+	<script>
+		$(document).ready(function() {
+		    $('.group').material_select();
+		    $('.location').material_select();
+		  });
+	
+		 $('.location').on('change', function(a) {
+			     var option = $(this).find('option:selected').val();
+			     angular.element(document.getElementById('body')).scope().locationChange(option);
+			  });
+		 
+		 $('.group').on('change', function(a) {
+		     var group = $(this).find('option:selected').val();
+		     angular.element(document.getElementById('body')).scope().groupChange(group);
+		  });
+		//angular codes
+		var app = angular.module('myApp', []);
+		app.controller(
+						'DonorCtrlr',
+						function($scope, $http) {
+							$scope.formValue ={};
+							
+							$scope.disablebutton =true;
+							$scope.locationChanged =false;
+							$scope.groupChanged =false;
+							
+							$scope.locationChange = function(location) {
+								$scope.formValue.locID= location;
+								$scope.groupChanged =true;
+								if($scope.locationChanged){
+									$scope.disablebutton =false;
+									$scope.$apply();
+								}
+							}
+							
+							$scope.groupChange = function(group) {
+								$scope.formValue.group= group;
+								$scope.locationChanged =true;
+								if($scope.groupChanged){
+									$scope.disablebutton =false;
+									$scope.$apply();
+								}
+							}
+							
+							
+							 $scope.submit = function() {
+								 $http.post("../submitDonor.do", $scope.formValue)
+								 .success(function(data, status) {
+									 Materialize.toast('Your details submited ,Thank you!!', 4000);
+									 window.setTimeout(function(){ location.reload(400);}, 4000);
+									 Thread.sleep();
+									 
+								 })
+							     .error(function(err){"ERR", console.log(err)});
+							}
+							
+						});
+		
+		
+		
+	</script>
+
+</body>
+</html>

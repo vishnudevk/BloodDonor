@@ -1,0 +1,140 @@
+<html>
+<head>
+<!--Import materialize.css-->
+<link type="text/css" rel="stylesheet" href="../css/font-awesome.css"
+	media="screen,projection" />
+<link type="text/css" rel="stylesheet" href="../css/materialize.css"
+	media="screen,projection" />
+<link type="text/css" rel="stylesheet" href="../css/style.css"
+	media="screen,projection" />
+<!-- Icon font -->
+<link href="../css/MaterialIcons.css" rel="stylesheet">
+
+<style type="text/css">
+	.location {
+		float: right;
+		width: 30%;
+	}
+	
+	.group {
+		float: right;
+		width: 20%;
+	}
+	
+	.select-wrapper>input {
+		border-color: white !important;
+		font-size: 1.5rem !important;
+	}
+</style>
+
+<!--Let browser know website is optimized for mobile-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Blood Donation Search</title>
+</head>
+<body ng-app="myApp" ng-controller="DonorCtrlr" id="body">
+
+	<nav>
+		<div class="nav-wrapper" style="font-size: 2.1rem">
+			<a href="../" style=" color:white; float: left;padding-left:0.5em">Search</a> 
+ 				<i class="mdi-action-search right-align"
+				style="color: white!important;width: 1em;float: right;right: 0;"></i>
+				<select class="group">
+					<option value="" disabled selected>Group</option>
+					<option value="A+">A+</option>
+					<option value="B+">B+</option>
+					<option value="AB+">AB+</option>
+					<option value="O+">O+</option>
+					<option value="A-">A-</option>
+					<option value="B-">B-</option>
+					<option value="AB-">AB-</option>
+					<option value="O-">O-</option>
+				</select>
+				<select class="location">
+					<option value="" disabled selected>Location</option>
+					<option value="080">Bangalore</option>
+					<option value="044">Chennai</option>
+					<option value="022">Mumbai</option>
+				</select>
+		</div> 	
+	</nav>
+	
+	<div ng-hide="resultHidden">
+		<ul class="collection">
+			<li ng-repeat="result in results |  filter: { group : bloodgroup }:true" ng-animate=ng-animate=
+				"{enter: 'animate-enter', leave: 'animate-leave'}" class="collection-item avatar">
+				<div class="sentimentMarker green"></div> 
+				<img src="../css/profile.jpg" alt="" class="circle"> 
+				<span class="title"><b>{{result.name}} : {{result.group}}</b>
+			    </span>
+			    <p>Phone: {{result.phone}}</p> 
+				<p>{{result.address}}</p> 
+				<a href="tel:{{result.phone}}" class="secondary-content">
+				<i class="material-icons">call</i>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div ng-show="resultHidden">
+		<ul class="collection">
+			<li>
+				<span class="title"><b>No result found</b>
+			    </span>
+			    <p>Search for some other location </p> 
+			</li>
+		</ul>
+	</div>
+
+	<!--Import jQuery before materialize.js-->
+	<script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+	<script type="text/javascript" src="../js/materialize.js"></script>
+	<script type="text/javascript" src="../js/angular.js"></script>
+
+	<script>
+		$(document).ready(function() {
+		    $('.group').material_select();
+		    $('.location').material_select();
+		  });
+	
+		 $('.location').on('change', function(a) {
+			     var option = $(this).find('option:selected').val();
+			     angular.element(document.getElementById('body')).scope().search(option);
+			  });
+		 
+		 $('.group').on('change', function(a) {
+		     var group = $(this).find('option:selected').val();
+		     angular.element(document.getElementById('body')).scope().setGroup(group);
+		  });
+		//angular codes
+		var app = angular.module('myApp', []);
+		app.controller(
+						'DonorCtrlr',
+						function($scope, $http) {
+							$scope.resultHidden =true;
+							$scope.bloodgroup;
+							$scope.results = [];
+							
+							$scope.setGroup = function(group) {
+								$scope.bloodgroup = group;
+								$scope.$apply();
+							}
+							
+							$scope.search = function(location) {
+							   // alert(location);
+							$http.get("../getDonor.do?locationID="+location)
+							    .success(function(response) {
+							    	if(response.length>0){
+							    		$scope.resultHidden = false;
+							    		$scope.results = response
+							    	}else{
+							    		$scope.resultHidden = true;
+							    		$scope.results = [];
+							    	}
+						    	});
+							    
+							};
+						});
+	</script>
+
+</body>
+</html>
